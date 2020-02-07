@@ -5,18 +5,22 @@
 
 //#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
+#ifdef ARDUINO_AVR_UNO
+#define Bluetooth Serial
+#elif ARDUINO_AVR_MEGA2560
 #define Bluetooth Serial1
+#endif
 
 
 void setup() {
-  #ifndef EXPERIMENTAL
+#ifndef EXPERIMENTAL
 #ifdef USE_DEBUG
   Serial.begin(9600);  // initialize serial
 #endif
   Bluetooth.begin(9600);
 #endif
 
-  while (!Serial);
+  //while (!Serial);
   while (!Bluetooth);
 #ifdef EXPERIMENTAL
 
@@ -32,7 +36,7 @@ void setup() {
 
     while (true); // if failed, do nothing
   }
-  #endif
+#endif
 
 #ifdef USE_DEBUG
   Serial.println("Welcome to Ionium (DEBUG)");

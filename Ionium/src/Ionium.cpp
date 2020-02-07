@@ -1,8 +1,15 @@
 #include <LoRa.h>
+#include <Arduino.h>
 #include "Ionium.h"
+
+#ifdef ARDUINO_AVR_UNO
+byte localAddress = 0xFF;
+byte destination = 0xBB;
+#elif ARDUINO_AVR_MEGA2560
 byte localAddress = 0xBB;
 byte destination = 0xFF;
-int messageCount = 0;
+#endif
+
 void readMessage() {
   // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
@@ -43,6 +50,7 @@ void readMessage() {
   Serial.println("Message: " + incoming);
   Serial.println();
 #endif
+  Bluetooth.println("Received from: 0x" + String(sender, HEX));
   Bluetooth.println("Message: " + incoming);
   Bluetooth.println();
 }
@@ -54,7 +62,6 @@ void sendMessage(String outgoing) {
   LoRa.write(outgoing.length());        // add payload length
   LoRa.print(outgoing);                 // add payload
   LoRa.endPacket();                     // finish packet and send it
-  messageCount++;
 }
 
 void onReceive(int packetSize) {
