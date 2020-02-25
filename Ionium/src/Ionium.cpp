@@ -52,6 +52,7 @@ void readMessage() {
 #endif
   Bluetooth.println("Received from: 0x" + String(sender, HEX));
   Bluetooth.println("Message: " + incoming);
+  Bluetooth.println("RSSI: " + String(LoRa.packetRssi()));
   Bluetooth.println();
 }
 
@@ -61,7 +62,7 @@ void sendMessage(String outgoing) {
   LoRa.write(localAddress);             // add sender address
   LoRa.write(outgoing.length());        // add payload length
   LoRa.print(outgoing);                 // add payload
-  LoRa.endPacket();                     // finish packet and send it
+  LoRa.endPacket(true);                     // finish packet and send it
 }
 
 void onReceive(int packetSize) {
@@ -69,3 +70,5 @@ void onReceive(int packetSize) {
 
   readMessage();
 }
+
+

@@ -1,7 +1,16 @@
 //TODO:
 //Encryption
+//Switch to ESP32
 #include <LoRa.h> // include LoRa library
 #include "src/Ionium.h"
+
+/* For the brave souls who get this far: You are the chosen ones,
+ the valiant knights of programming who toil away, without rest,
+ fixing our most awful code. To you, true saviors, kings of men,
+ I say this: never gonna give you up, never gonna let you down,
+ never gonna run around and desert you. Never gonna make you cry,
+ never gonna say goodbye. Never gonna tell a lie and hurt you. */
+
 
 //#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
@@ -36,6 +45,7 @@ void setup() {
 
     while (true); // if failed, do nothing
   }
+ 
 #endif
 
 #ifdef USE_DEBUG
