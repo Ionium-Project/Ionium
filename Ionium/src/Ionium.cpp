@@ -1,5 +1,6 @@
 #include <LoRa.h>
 #include <Arduino.h>
+#include <BluetoothSerial.h>
 #include "Ionium.h"
 
 #ifdef ARDUINO_AVR_UNO
@@ -9,6 +10,9 @@ byte destination = 0xBB;
 byte localAddress = 0xBB;
 byte destination = 0xFF;
 #endif
+byte localAddress = 0xBB;
+byte destination = 0xFF;
+//BluetoothSerial Bluetooth;
 
 void readMessage() {
   // read packet header bytes:

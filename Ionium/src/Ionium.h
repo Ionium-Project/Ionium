@@ -1,11 +1,13 @@
 #ifndef IONIUM_H
 #define IONIUM_H
+#include <BluetoothSerial.h>
 
 #ifdef ARDUINO_AVR_UNO
 #define Bluetooth Serial
 #elif ARDUINO_AVR_MEGA2560
 #define Bluetooth Serial1
 #endif
+extern BluetoothSerial Bluetooth;
 extern byte localAddress; // = 0xBB;     // address of this device
 extern byte destination; // = 0xFF;      // destination to send to
 extern int messageCount;

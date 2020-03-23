@@ -1,7 +1,7 @@
 //TODO:
 //Encryption
-//Switch to ESP32
 #include <LoRa.h> // include LoRa library
+#include <BluetoothSerial.h>
 #include "src/Ionium.h"
 
 /* For the brave souls who get this far: You are the chosen ones,
@@ -11,7 +11,6 @@
  never gonna run around and desert you. Never gonna make you cry,
  never gonna say goodbye. Never gonna tell a lie and hurt you. */
 
-
 //#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
 #ifdef ARDUINO_AVR_UNO
@@ -19,22 +18,24 @@
 #elif ARDUINO_AVR_MEGA2560
 #define Bluetooth Serial1
 #endif
-
+BluetoothSerial Bluetooth;
 
 void setup() {
 #ifndef EXPERIMENTAL
 #ifdef USE_DEBUG
-  Serial.begin(9600);  // initialize serial
+  Serial.begin(115200);  // initialize serial
 #endif
-  Bluetooth.begin(9600);
+  Bluetooth.begin("IONIUMX"); //Please set to 0 for first device and 1 for second device and so on.
 #endif
 
   //while (!Serial);
-  while (!Bluetooth);
+//  while (!Bluetooth);
 #ifdef EXPERIMENTAL
 
 
 #else
+
+LoRa.setPins(5, 14, 2);
   if (!LoRa.begin(866E6)) {    // initialize radio at 866 MHz
 
 #ifdef USE_DEBUG
