@@ -6,8 +6,10 @@
 #define Bluetooth Serial
 #elif ARDUINO_AVR_MEGA2560
 #define Bluetooth Serial1
-#endif
+#elif ARDUINO_ARCH_ESP32
 extern BluetoothSerial Bluetooth;
+#endif
+
 extern byte localAddress; // = 0xBB;     // address of this device
 extern byte destination; // = 0xFF;      // destination to send to
 extern int messageCount;

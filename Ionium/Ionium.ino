@@ -17,8 +17,9 @@
 #define Bluetooth Serial
 #elif ARDUINO_AVR_MEGA2560
 #define Bluetooth Serial1
-#endif
+#elif ARDUINO_ARCH_ESP32
 BluetoothSerial Bluetooth;
+#endif
 
 void setup() {
 #ifndef EXPERIMENTAL
