@@ -2,6 +2,7 @@
 //Encryption
 #include <LoRa.h> // include LoRa library
 #include <BluetoothSerial.h>
+#include <EEPROM.h>
 #include "src/Ionium.h"
 
 /* For the brave souls who get this far: You are the chosen ones,
@@ -10,6 +11,9 @@
  I say this: never gonna give you up, never gonna let you down,
  never gonna run around and desert you. Never gonna make you cry,
  never gonna say goodbye. Never gonna tell a lie and hurt you. */
+
+#define EEPROM_SIZE 1
+#define DEVICE_ID 0 //Set to an unique value. Max is 255 for now
 
 //#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
@@ -21,16 +25,31 @@
 BluetoothSerial Bluetooth;
 #endif
 
+void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param){
+  if(event == ESP_SPP_SRV_OPEN_EVT){
+  #ifdef USE_DEBUG
+  Serial.println("Welcome to Ionium (DEBUG)");
+  #endif
+  Bluetooth.println("Welcome to Ionium");
+  }
+}
+
 void setup() {
 #ifndef EXPERIMENTAL
 #ifdef USE_DEBUG
   Serial.begin(115200);  // initialize serial
 #endif
-  Bluetooth.begin("IONIUMX"); //Please set to 0 for first device and 1 for second device and so on.
+  EEPROM.begin(EEPROM_SIZE);
+  if (EEPROM.read(0) != 255) {
+    Bluetooth.begin("IONIUM" + String(EEPROM.read(0)));
+  }
+  else {
+    EEPROM.write(0, DEVICE_ID);
+    EEPROM.commit();
+    Bluetooth.begin("IONIUM" + String(EEPROM.read(0)));
+  }
 #endif
 
-  //while (!Serial);
-//  while (!Bluetooth);
 #ifdef EXPERIMENTAL
 
 
@@ -49,11 +68,7 @@ LoRa.setPins(5, 14, 2);
   }
  
 #endif
-
-#ifdef USE_DEBUG
-  Serial.println("Welcome to Ionium (DEBUG)");
-#endif
-  Bluetooth.println("Welcome to Ionium");
+Bluetooth.register_callback(callback);
 }
 
 void loop() {
