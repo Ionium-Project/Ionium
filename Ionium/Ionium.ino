@@ -3,7 +3,6 @@
 #include <LoRa.h> // include LoRa library
 #include <BluetoothSerial.h>
 #include <EEPROM.h>
-#include <WiFi.h>
 #include "src/Ionium.h"
 
 /* For the brave souls who get this far: You are the chosen ones,
@@ -16,7 +15,7 @@
 #define EEPROM_SIZE 1
 #define DEVICE_ID 0 //Set to an unique value. Max is 255 for now
 
-//#define USE_DEBUG //Used for debugging stuff
+#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
 #ifdef ARDUINO_AVR_UNO
 #define Bluetooth Serial
@@ -34,6 +33,20 @@ void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
         Bluetooth.println("Welcome to Ionium");
     }
 }
+
+uint64_t string2uint64(const char *str, uint8_t base) {
+  uint64_t  result = 0;
+  for (int i = 0; str[i] != '\0'; i++)
+    result = result * base + str[i] - '0';
+  return result;
+}
+
+union {
+      uint64_t destination = 0;
+      uint8_t destArray[8];
+} destUnion;
+
+char To64Bit[20];
 
 void setup() {
 #ifndef EXPERIMENTAL
@@ -78,19 +91,31 @@ void setup() {
 void loop() {
     if (Bluetooth.available()) {
         String message = "";
-
         // read message from bluetooth
+        uint8_t index = 0;
+        while (Bluetooth.peek() >= 48 && Bluetooth.peek() <= 57) {
+            Serial.println(Bluetooth.peek());
+            To64Bit[index] = Bluetooth.read();
+            index++;
+        }
+        index = 0;
+        To64Bit[16] = '\0';
+        destUnion.destination = string2uint64(To64Bit, 10);
+        
+        for (int i = 0; i<3; i++) {
+          Bluetooth.read(); // This is just to get rid of the " | "
+        }
+        
         while (Bluetooth.available()) {
             message += Bluetooth.readString();
         }
-
+        
 #ifdef USE_DEBUG
         Serial.println("You: " + message);
 #endif
-        Bluetooth.println("You: " + message);
+        Bluetooth.print("You: " + message);
 
-        sendMessage(message);
-
+        sendMessage(message, destUnion.destination);
     }
 
     // parse for a packet, and call onReceive with the result:

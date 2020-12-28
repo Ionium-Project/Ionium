@@ -101,20 +101,15 @@ void readMessage() {
 }
 
 
-void sendMessage(String outgoing) {
+void sendMessage(String outgoing, uint64_t destination) {
     localUnion.localAddress = ESP.getEfuseMac();
-    if (EEPROM.read(0) == 0) {
-        destUnion.destination = 181209277256132;
-    }
-    else if (EEPROM.read(0) == 1) {
-        destUnion.destination = 181209277264232;
-    }
+    destUnion.destination = destination;
     LoRa.beginPacket();                   // start packet
     for (int i = 5; i>-1; i--) {
-        LoRa.write(destUnion.destArray[i]);              // add destination address
+        LoRa.write(destUnion.destArray[i]); // add destination address
     }
     for (int i = 0; i<6; i++) {
-        LoRa.write(localUnion.localArray[i]);
+        LoRa.write(localUnion.localArray[i]); // Add local address
     }
     LoRa.write(outgoing.length());        // add payload length
     LoRa.print(outgoing);                 // add payload
