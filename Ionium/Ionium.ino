@@ -16,7 +16,7 @@
 #define EEPROM_SIZE 1
 #define DEVICE_ID 0 //Set to an unique value. Max is 255 for now
 
-#define USE_DEBUG //Used for debugging stuff
+//#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
 #ifdef ARDUINO_AVR_UNO
 #define Bluetooth Serial
@@ -25,30 +25,30 @@
 #elif ARDUINO_ARCH_ESP32
 BluetoothSerial Bluetooth;
 #endif
-uint32_t chipId = 0;
-void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param){
-  if(event == ESP_SPP_SRV_OPEN_EVT){
-  #ifdef USE_DEBUG
-  Serial.println("Welcome to Ionium (DEBUG)");
-  #endif
-  Bluetooth.println("Welcome to Ionium");
-  }
+
+void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
+    if(event == ESP_SPP_SRV_OPEN_EVT) {
+#ifdef USE_DEBUG
+        Serial.println("Welcome to Ionium (DEBUG)");
+#endif
+        Bluetooth.println("Welcome to Ionium");
+    }
 }
 
 void setup() {
 #ifndef EXPERIMENTAL
 #ifdef USE_DEBUG
-  Serial.begin(115200);  // initialize serial
+    Serial.begin(115200);  // initialize serial
 #endif
-  EEPROM.begin(EEPROM_SIZE);
-  if (EEPROM.read(0) != 255) {
-    Bluetooth.begin("IONIUM " + String(EEPROM.read(0)));
-  }
-  else {
-    EEPROM.write(0, DEVICE_ID);
-    EEPROM.commit();
-    Bluetooth.begin("IONIUM " + String(EEPROM.read(0)));
-  }
+    EEPROM.begin(EEPROM_SIZE);
+    if (EEPROM.read(0) != 255) {
+        Bluetooth.begin("IONIUM " + String(EEPROM.read(0)));
+    }
+    else {
+        EEPROM.write(0, DEVICE_ID);
+        EEPROM.commit();
+        Bluetooth.begin("IONIUM " + String(EEPROM.read(0)));
+    }
 #endif
 
 #ifdef EXPERIMENTAL
@@ -56,44 +56,43 @@ void setup() {
 
 #else
 
-LoRa.setPins(5, 14, 2);
-LoRa.setSignalBandwidth(500E3);
-LoRa.enableCrc();
-  if (!LoRa.begin(866E6)) {    // initialize radio at 866 MHz
+    LoRa.setPins(5, 14, 2);
+    LoRa.setSignalBandwidth(500E3);
+    LoRa.enableCrc();
+    if (!LoRa.begin(866E6)) {    // initialize radio at 866 MHz
 
 #ifdef USE_DEBUG
-    Serial.println("IONIUM::ERROR >> 404");
+        Serial.println("IONIUM::ERROR >> 404");
 #endif
-    Bluetooth.println("IONIUM::ERROR >> 404");
+        Bluetooth.println("IONIUM::ERROR >> 404");
 
 
-    while (true); // if failed, do nothing
-  }
- 
+        while (true); // if failed, do nothing
+    }
+
 #endif
 
-Bluetooth.register_callback(callback);
+    Bluetooth.register_callback(callback);
 }
 
 void loop() {
-  if (Bluetooth.available()) {
-    String message = "";
+    if (Bluetooth.available()) {
+        String message = "";
 
-    // read message from bluetooth
-    while (Bluetooth.available()) {
-      message += Bluetooth.readString();
-    }
+        // read message from bluetooth
+        while (Bluetooth.available()) {
+            message += Bluetooth.readString();
+        }
 
 #ifdef USE_DEBUG
-    Serial.println("You: " + message);
+        Serial.println("You: " + message);
 #endif
-    Bluetooth.println("You: " + message);
-    Bluetooth.println(WiFi.macAddress());
+        Bluetooth.println("You: " + message);
 
-    sendMessage(message);
+        sendMessage(message);
 
-  }
+    }
 
-  // parse for a packet, and call onReceive with the result:
-  onReceive(LoRa.parsePacket());
+    // parse for a packet, and call onReceive with the result:
+    onReceive(LoRa.parsePacket());
 }
