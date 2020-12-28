@@ -3,6 +3,7 @@
 #include <LoRa.h> // include LoRa library
 #include <BluetoothSerial.h>
 #include <EEPROM.h>
+#include <WiFi.h>
 #include "src/Ionium.h"
 
 /* For the brave souls who get this far: You are the chosen ones,
@@ -15,7 +16,7 @@
 #define EEPROM_SIZE 1
 #define DEVICE_ID 0 //Set to an unique value. Max is 255 for now
 
-//#define USE_DEBUG //Used for debugging stuff
+#define USE_DEBUG //Used for debugging stuff
 //#define EXPERIMENTAL //Use for enabling experimental features that have not been tested properly.
 #ifdef ARDUINO_AVR_UNO
 #define Bluetooth Serial
@@ -24,7 +25,7 @@
 #elif ARDUINO_ARCH_ESP32
 BluetoothSerial Bluetooth;
 #endif
-
+uint32_t chipId = 0;
 void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param){
   if(event == ESP_SPP_SRV_OPEN_EVT){
   #ifdef USE_DEBUG
@@ -41,12 +42,12 @@ void setup() {
 #endif
   EEPROM.begin(EEPROM_SIZE);
   if (EEPROM.read(0) != 255) {
-    Bluetooth.begin("IONIUM" + String(EEPROM.read(0)));
+    Bluetooth.begin("IONIUM " + String(EEPROM.read(0)));
   }
   else {
     EEPROM.write(0, DEVICE_ID);
     EEPROM.commit();
-    Bluetooth.begin("IONIUM" + String(EEPROM.read(0)));
+    Bluetooth.begin("IONIUM " + String(EEPROM.read(0)));
   }
 #endif
 
@@ -56,6 +57,8 @@ void setup() {
 #else
 
 LoRa.setPins(5, 14, 2);
+LoRa.setSignalBandwidth(500E3);
+LoRa.enableCrc();
   if (!LoRa.begin(866E6)) {    // initialize radio at 866 MHz
 
 #ifdef USE_DEBUG
@@ -68,6 +71,7 @@ LoRa.setPins(5, 14, 2);
   }
  
 #endif
+
 Bluetooth.register_callback(callback);
 }
 
@@ -84,6 +88,7 @@ void loop() {
     Serial.println("You: " + message);
 #endif
     Bluetooth.println("You: " + message);
+    Bluetooth.println(WiFi.macAddress());
 
     sendMessage(message);
 

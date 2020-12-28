@@ -10,8 +10,9 @@
 extern BluetoothSerial Bluetooth;
 #endif
 
-extern byte localAddress; // = 0xBB;     // address of this device
-extern byte destination; // = 0xFF;      // destination to send to
+extern uint32_t addressPart1;
+extern uint32_t addressPart2;
+extern String localAddress;
 extern int messageCount;
 void readMessage();
 void sendMessage( String);
