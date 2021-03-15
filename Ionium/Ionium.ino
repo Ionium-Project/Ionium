@@ -70,9 +70,12 @@ void setup() {
 #else
 
     LoRa.setPins(5, 14, 2);
-    LoRa.setSignalBandwidth(500E3);
+    LoRa.setTxPower(20);
+    LoRa.setSpreadingFactor(12);
+    LoRa.setCodingRate4(5);
+    LoRa.setGain(6);
     LoRa.enableCrc();
-    if (!LoRa.begin(866E6)) {    // initialize radio at 866 MHz
+    if (!LoRa.begin(868E6)) {    // initialize radio at 866 MHz
 
 #ifdef USE_DEBUG
         Serial.println("IONIUM::ERROR >> 404");
