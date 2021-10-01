@@ -22,7 +22,6 @@ union {
     uint8_t senArray[8];
     uint64_t sender;
 } senUnion;
-//BluetoothSerial Bluetooth;
 
 String parseChipID(uint64_t source) {
     uint32_t idPart1 = 0;
@@ -105,10 +104,10 @@ void sendMessage(String outgoing, uint64_t destination) {
     localUnion.localAddress = ESP.getEfuseMac();
     destUnion.destination = destination;
     LoRa.beginPacket();                   // start packet
-    for (int i = 5; i>-1; i--) {
+    for (int i = 5; i>-1; --i) {
         LoRa.write(destUnion.destArray[i]); // add destination address
     }
-    for (int i = 0; i<6; i++) {
+    for (int i = 0; i<6; ++i) {
         LoRa.write(localUnion.localArray[i]); // Add local address
     }
     LoRa.write(outgoing.length());        // add payload length
