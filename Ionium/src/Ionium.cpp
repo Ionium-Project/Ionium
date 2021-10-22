@@ -36,7 +36,6 @@ String parseChipID(uint64_t source) {
 String localAddress = parseChipID(ESP.getEfuseMac());
 
 void readMessage() {
-    // read packet header bytes:
     recTemp = 0;
     senTemp = 0;
     for (int i = 0; i<6; i++) {
