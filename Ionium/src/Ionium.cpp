@@ -28,9 +28,9 @@ String parseChipID(uint64_t source) {
     uint32_t idPart2 = 0;
     for(int i=0; i<17; i=i+8) {
         idPart2 |= ((source >> (40 - i)) & 0xff) << i;
-        idPart1 |= ((source >> (16 - i)) & 0xFF) << i;
+        idPart1 |= ((source >> (16 - i)) & 0xFF) << i; //Some bitshifting to get the 64 bit number into 2 32 bit. Arduino and thus ESP do not yet have 64bit variables :(
     }
-    return String(idPart1, HEX) + String(idPart2, HEX);
+    return String(idPart1, HEX) + String(idPart2, HEX); //Combine 2 32 bit numbers into string.
 }
 
 String localAddress = parseChipID(ESP.getEfuseMac());
