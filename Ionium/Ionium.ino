@@ -68,7 +68,7 @@ void setup() {
     LoRa.setCodingRate4(5);
     LoRa.setGain(6);
     LoRa.enableCrc();
-    if (!LoRa.begin(868E6)) {    // initialize radio at 866 MHz
+    if (!LoRa.begin(868E6)) {    // initialize radio at 866 MHz. SET YOUR FREQUENCY HERE IF 868 IS NOT ALLOWED IN YOUR COUNTRY
 
 #ifdef USE_DEBUG
         Serial.println("IONIUM::ERROR >> 404");
